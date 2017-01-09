@@ -24,11 +24,8 @@ s = t+.25*(rand(1,N)-.5*ones(size(t)));
 %
 [us,dus] = frontvel(s,x(1,:),x(2,:));
 [xx,yy] = meshgrid(linspace(-1,1,20),linspace(-1,1,20));
-close
-figure(1)
-clf
 #
-subplot(1,1,1)
+clf
 hold on
 contour(xx,yy,(u(1)*xx+u(2)*yy)./(u*u'),'LineWidth',3)
 colorbar
