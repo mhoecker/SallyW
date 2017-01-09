@@ -78,7 +78,7 @@ Ndof = length(t)-length(c);
 %
 %
 % Calculate (if possible) the uncertainty in c
-if(Ndof-1>0)
+if(Ndof>1)
  sigsq = sum(err.*err)/(Ndof-1);
 % use number of radar images rather than number of points to calculate error
  sigsq2 = sum(err.*err)/(56*2); 
