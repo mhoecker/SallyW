@@ -94,8 +94,6 @@ if(Ndof>0)
  Ainv = inv(Asq);
 % calculate the variance of the error
 % to estimate of the uncertainty of the arrival times
-% Factor of 2 is from the assumption of indipendent errors
-% so the difference has the sum of the two varances
  sigsq = sum(err.*err)/(Ndof);
  dc = 0*u;
 % use number of radar images rather than number of points to calculate error
