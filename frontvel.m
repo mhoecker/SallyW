@@ -1,6 +1,6 @@
-function [u,du2] = frontvel(t,x,y,z)
-%function [u,du] = frontvel(t,x,y,z)
-%
+%function [u,du2] = frontvel(t,x,y,z)
+function [u,du] = frontvel(t,x,y,z)
+% function [u,du] = frontvel(t,x,y,z)
 % from a list of observations
 % t = time
 % x = x-coordinate
@@ -8,7 +8,14 @@ function [u,du2] = frontvel(t,x,y,z)
 % z = z-coordinate [optional]
 % assumes the front is locally straight relative to the observation array
 % technically it fits the inverse phase speed
-%
+% returns the estimated fron speed 
+% u
+% and the uncertainty
+% du
+% by Martin Hoecker-Martinez
+% Adapted from Chapter 15 of
+% Numerical Recipes in Fortran 77 The Art of Scientific Computing 2nd Ed, 
+% William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery% 
 %
 %
 % Given N observations there are
@@ -78,17 +85,35 @@ Ndof = length(t)-length(c);
 %
 %
 % Calculate (if possible) the uncertainty in c
-if(Ndof>1)
- sigsq = sum(err.*err)/(Ndof-1);
+% Adapted from Chapter 15 of
+% Numerical Recipes in Fortran 77 The Art of Scientific Computing 2nd Ed, 
+% William H. Press, Saul A. Teukolsky, William T. Vetterling, Brian P. Flannery
+if(Ndof>0)
+% The inverse of Asq gives the uncertainty in the fit parameters
+% as scaled by the uncertainty in the masurements
+ Ainv = inv(Asq);
+% calculate the variance of the error
+% to estimate of the uncertainty of the arrival times
+% Factor of 2 is from the assumption of indipendent errors
+% so the difference has the sum of the two varances
+ sigsq = sum(err.*err)/(Ndof);
+ dc = 0*u;
 % use number of radar images rather than number of points to calculate error
- sigsq2 = sum(err.*err)/(56*2); 
- dc = sqrt(sigsq./sum(abs(Asq)));
+% I (Mart!n) don't understand why this is neccecary
+ sigsq2 = sum(err.*err)/(56); 
+ dc2 = 0*u;
+%
+ for i=1:length(u)
+  dc(i) = sqrt(sigsq*Ainv(i,i));
 % use number of radar images rather than number of points to calculate error
- dc2 = sqrt(sigsq2./sum(abs(Asq))); 
+% I (Mart!n) don't understand why this is neccecary
+  dc2(i) = sqrt(sigsq2*Ainv(i,i));
+ end%for
 else
  dc = NaN*c;
 end%if
 du = dc*sum(u.*u);
 % use number of radar images rather than number of points to calculate error
+% I (Mart!n) don't understand why this is neccecary
 du2 = dc2*sum(u.*u); 
 end%function
